@@ -47,7 +47,7 @@ Please consult IT specialist
 
 
 Created by: Jasurbek Mahmudjonov
-Company: TTPU
-Contact: +998505750117
-Email: jasur.prsnl@gmail.com
+\nCompany: TTPU
+\nContact: +998505750117
+\nEmail: jasur.prsnl@gmail.com
 
