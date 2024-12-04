@@ -4,18 +4,18 @@ It faciliates effective communication between directors and employees
 allowing to assign and complete tasks.
 
 Managers, thereinafter admins, can:
--create and edit tasks
--remind users about tasks
--acces dashboard
--accept new users or admins
--customize bot's UI
--attach files and add comments
+- create and edit tasks
+- remind users about tasks
+- acces dashboard
+- accept new users or admins
+- customize bot's UI
+- attach files and add comments
 
 
 Employees, thereinafter users, can:
--complete tasks
--acces dashboard
--attach files and add comments
+- complete tasks
+- acces dashboard
+- attach files and add comments
 
 After starting (/start) bot asks if a guest is admin or user
 All the candidatorial admins required to enter passworrd supplemented by Rector
