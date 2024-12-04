@@ -30,11 +30,11 @@ Before deploying make sure:
 3. You are connected to internet
 
 Start with:
-1.Find start.bat in the same directory as readme file
-2.Run it by double clicking
-3.It automatively installs all the dependences
-4.Carefully follow instructions of the program
-5.After sucessful initalization bots starts operating
+1. Find start.bat in the same directory as readme file
+2. Run it by double clicking
+3. It automatively installs all the dependences
+4. Carefully follow instructions of the program
+5. After sucessful initalization bots starts operating
 
 P.S. You can change bot token and first admins phone number
 in config.json if you want to restart bot with different
