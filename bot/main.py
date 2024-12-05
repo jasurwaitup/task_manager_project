@@ -5,41 +5,37 @@ import json
 
 
 def first_kex():
-    greeting = "Hi"
+    greeting = "Hi, t"
     hour = datetime.datetime.now().hour
     if hour >=5 and hour < 10:
-        greeting = "Good Morning"
+        greeting = "Good Morning, t"
     if hour >=10 and hour < 13:
-        greeting = "Awesome day, isn't it?"
+        greeting = "Awesome day, isn't it? T"
     elif hour >=13 and hour <=17:
-        greeting = "Good Afternoon"
+        greeting = "Good Afternoon, t"
     elif hour >17 and hour <21:
-        greeting = "God Evening"
+        greeting = "God Evening, t"
     elif hour > 21 or hour < 5:
-        greeting = "What a lovely night!"
+        greeting = "What a lovely night! T"
 
-    print(f"\n\n\n{greeting} this is Task Manager bot created for TTPU adminstration")
+    print(f"\n\n\n{greeting}his is Task Manager bot created for TTPU adminstration")
     name = input("What is you name, by the way? ").capitalize()
 
     message1 = f"""Nice to meet you {name}, This program is a telegram bot server
 Do you have the token of a vacant telegram bot?"""
     message2 = """Copy and past it here
-If you're unable to paste, try Ctrl+Shift+V instead of Ctrl+V
-And make sure that your bot has /start command, otherwise write /start manually when you enter chat"""
-    message3 = """Now, type the phone number of admin, one who creates and assigns tasks.
-This number is like starting point of functionality. You can omit plus sign. 
-You can always change admins in the bot.
-You can cnahge main phone number in config.json only if necessary """
-    message4 = "Now I am launching the bot,please go to your telegram and open bot chat"
+And make sure that you have read README"""
+    message3 = """Now, type the phone number of admin, please dont forget country code. """
+    message4 = "Now I am launching the bot, please go to your telegram and open bot chat"
     message5 = """If you don't have a token, you can get one in telegram bot
 called BotFather by creating a new bot, and don't forget to add /start command.
-If you are troubled coucil an IT specialist"""
-    message6 = "(Yes or No, yes or no, y or n, 1 or 0, any number or 0) "
+If you are troubled consult an IT specialist"""
+    message6 = "(Yes or No | yes or no | y or n | 1 or 0 | any number or 0) "
 
     print(message1, message6, sep="\n")
 
     def get_token():
-        token = input("your token: ").strip()
+        token = input(" Your token: ").strip()
         url = f"https://api.telegram.org/bot{token}/getMe"
         try:
             response = requests.get(url)
@@ -61,7 +57,7 @@ If you are troubled coucil an IT specialist"""
             return get_token()
         
     def get_number():
-        num = input("number: ").strip()
+        num = input(" Phone number: ").strip()
         num = num.removeprefix("+")
         if not num.isdigit():
             print("Your number contains non digit symbols, try again")
@@ -71,7 +67,7 @@ If you are troubled coucil an IT specialist"""
 
 
     while True:
-        answer = input("answer: ").lower().strip()
+        answer = input(" Answer: ").lower().strip()
         meaning = None
         if answer in ["yes", "ye", "y", "yeah", "ha", "da"]:
             meaning = True
@@ -98,19 +94,18 @@ If you are troubled coucil an IT specialist"""
 
 def start():
     token, number = None, None
-    with open("../config.json", "r") as file:
-        try:
+    try:
+        with open("../config.json", "r") as file:
             config = json.load(file)
             if not config:
                 raise ValueError
-        except:
-            config = {"token":None,"number":None}
-        print(config)
-        token = config["token"]
-        number = config["number"]
-        if token and  number:
-            print("Launching bot using custom settings...")
-            launch_bot(token, number)
+    except:
+        config = {"token":None,"number":None}
+    token = config["token"]
+    number = config["number"]
+    if token and  number:
+        print("Launching bot using pre-set settings...")
+        launch_bot(token, number)
     with open("../config.json", "w") as file:
         token, number = first_kex()
         config = {}

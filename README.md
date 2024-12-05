@@ -1,5 +1,7 @@
 This is Task Manager Bot created for TTPU adminstration
 
+cd /d %~dp0bot
+
 It faciliates effective communication between directors and employees 
 allowing to assign and complete tasks.
 

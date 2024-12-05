@@ -555,7 +555,7 @@ def graceful_shutdown(signum, frame):
     sys.exit()
 
 async def post_polling(app : Application):
-    print("Starting...")
+    print("Setting schedule...")
     await data_handler.recover()
     app.job_queue.run_repeating(data_handler.back_up, interval=600)
 
@@ -585,6 +585,7 @@ def launch_bot(token=TOKEN, admin_number:str=None):
     app.add_handler(MessageHandler(filters.TEXT, handle_keyboard_buttons))
     app.add_handler(MessageHandler(filters.Document.ALL, handle_file_inputs))
     app.add_handler(MessageHandler(filters.PHOTO, handle_file_inputs))
+    print("Bot is starting...")
     app.run_polling()
 
 
