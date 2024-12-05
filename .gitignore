@@ -1,6 +1,7 @@
 venv/
 
 config.json
+pyvenv.cfg
 
 .DS_Store
 Thumbs.db
