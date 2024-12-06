@@ -2,7 +2,7 @@ from telegram import Update, KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardR
 from telegram.ext import ContextTypes
 from datetime import datetime
 
-import functionality
+from functionality import Markup, radio_button
 import data_handler
 
 class Task:
@@ -90,25 +90,26 @@ class Task:
     def from_tuple(self, data):
         self.__init__(*data)
 
-    async def show_me(self, is_for_admin : bool = False, user_id = None, notified_flag = False, light_accept = False ,for_markup_edit = False, all_users:dict = None):
+    async def show_me(self, app_data, is_for_admin : bool = False, user_id = None, notified_flag = False, light_accept = False ,for_markup_edit = False, all_users:dict = None):
         print("show_me")
-        comment_button = InlineKeyboardButton("Comment", callback_data=f"c{self._task_id}")
-        file_button = InlineKeyboardButton("File", callback_data=f"f{self._task_id}")
+        comment_button = InlineKeyboardButton(app_data["button_texts"]["comment"][0], callback_data=f"c{self._task_id}")
+        file_button = InlineKeyboardButton(app_data["button_texts"]["file"][0], callback_data=f"f{self._task_id}")
         if is_for_admin:
-            a = "Notify"
+            a = app_data["button_texts"]["notify"][0]
             b = "n"
             if notified_flag:
                 a = "Notified"
                 b = "N"
             notify_button = InlineKeyboardButton(a, callback_data=f"{b}{self._task_id}")
-            edit_button = InlineKeyboardButton("Edit", callback_data=f"e{self._task_id}")
+            edit_button = InlineKeyboardButton(app_data["button_texts"]["edit"][0], callback_data=f"e{self._task_id}")
             markup = InlineKeyboardMarkup([[file_button, comment_button], [notify_button, edit_button]])
         else:
-            a = "Accept"
+            a = app_data["button_texts"]["accept"][0]
             if light_accept:
-                a = "<<ACCEPT>>"
+                h = app_data["button_texts"]["highlight_symbol"][0]
+                a = f"{h}{a}{h}"
             b = "a"
-            c = "Complete"
+            c = app_data["button_texts"]["complete"][0]
             d = "z"
             if user_id in self._users_accepted:
                 a = "Accepted"
@@ -124,11 +125,11 @@ class Task:
             users_list = []
             for u in self._attached_users:
                 if u in self._users_completed:
-                    users_list.append(f"{u} C")
+                    users_list.append(f"{u} {app_data["button_texts"]["completed_symbol"][0]}")
                 elif u in self._users_accepted:
-                    users_list.append(f"{u} A")
+                    users_list.append(f"{u} {app_data["button_texts"]["accepted_symbol"][0]}")
                 else:
-                    users_list.append(f"{u} N")
+                    users_list.append(f"{u} {app_data["button_texts"]["attached_symbol"][0]}")
             body = f"{self._description}\n\n"
             a = ".".join(map(str, self._started_on))
             b = ".".join(map(str, self._deadline))
@@ -152,16 +153,16 @@ class Task:
 
 class Participant:
     CANCEL_KB = [[
-        KeyboardButton("Cancel")]
+        KeyboardButton(Markup.cancel)]
     ]
 
-    ATTACH_FILE_KB = [[KeyboardButton("Ok")],[
-        KeyboardButton("Cancel")]
+    ATTACH_FILE_KB = [[KeyboardButton(Markup.save)],[
+        KeyboardButton(Markup.cancel)]
     ]
 
     INLINE_DIALOG_KB = [
-        [InlineKeyboardButton("Yes", callback_data="yes")],
-        [InlineKeyboardButton("No", callback_data="no")]
+        [InlineKeyboardButton(Markup.yes, callback_data="yes")],
+        [InlineKeyboardButton(Markup.no, callback_data="no")]
     ]
     INLINE_DIALOG = InlineKeyboardMarkup(INLINE_DIALOG_KB)
 
@@ -187,8 +188,8 @@ class Participant:
 
 class User(Participant):
     USER_MENU_KB = [[
-        KeyboardButton("Task List")],
-        [KeyboardButton("My Tasks")]
+        KeyboardButton(Markup.task_list)],
+        [KeyboardButton(Markup.my_tasks)]
     ]
     USER_MENU = ReplyKeyboardMarkup(USER_MENU_KB, resize_keyboard=True)
 
@@ -197,9 +198,9 @@ class Admin(Participant):
     Super_Admin_Numbers = ["998889650117"]
     Admin_Password = None
     ADMIN_MENU_KB = [
-        [KeyboardButton("Task List")],
-        [KeyboardButton("New Task")],
-        [KeyboardButton("Preferences")]
+        [KeyboardButton(Markup.task_list)],
+        [KeyboardButton(Markup.new_task)],
+        [KeyboardButton(Markup.pref)]
     ]
     ADMIN_MENU = ReplyKeyboardMarkup(ADMIN_MENU_KB, resize_keyboard=True, one_time_keyboard=True)
 
@@ -215,7 +216,8 @@ class Admin(Participant):
 
         [KeyboardButton("Alarm Interval")],
         [KeyboardButton("Admin Password")],
-        [KeyboardButton("Textual Content")]
+        [KeyboardButton("Textual Content")],
+        [KeyboardButton(Markup.cancel)]
     ]
     PREFERENCES_MENU = ReplyKeyboardMarkup(PREFERENCES_KB, resize_keyboard=True)
 
@@ -244,7 +246,7 @@ class Admin(Participant):
         full_dict = {}
         for k, v in full_data.items():
             full_dict[k] = v[-2]
-        return await functionality.radio_button(chosen, full_dict, user_id)
+        return await radio_button(chosen, full_dict, user_id)
     @staticmethod
     async def edit_deadline (step : int, year : int =None, month : str=None):
         month_names = ["Jan", "Feb", "March", "Apr", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"]
