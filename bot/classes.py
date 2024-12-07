@@ -200,6 +200,7 @@ class Admin(Participant):
     ADMIN_MENU_KB = [
         [KeyboardButton(Markup.task_list)],
         [KeyboardButton(Markup.new_task)],
+        [KeyboardButton(Markup.dashboard)],
         [KeyboardButton(Markup.pref)]
     ]
     ADMIN_MENU = ReplyKeyboardMarkup(ADMIN_MENU_KB, resize_keyboard=True, one_time_keyboard=True)

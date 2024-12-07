@@ -45,6 +45,7 @@ class Markup:
     task_list = "Task List"
     my_tasks = "My Tasks"
     pref = "Preferences"
+    dashboard = "Dashboard"
 
 async def radio_button(chosen_list:list, full_dict:dict, hit_button = None):
     #elements in chosen list are keys for full_dict

@@ -42,7 +42,7 @@ async def back_up(context):
         print("Back up is working...")
         try:
             path = os.path.join(root, f"{time_prefix}tasks.json")
-            with open(path, "w") as file:
+            with open(path, "x") as file:
                 dump(Data.tasks, file, indent=2, ensure_ascii=True)
                 print("Saving all tasks...")
             path = os.path.join(root, f"{time_prefix}users.json")
@@ -66,6 +66,9 @@ async def back_up(context):
             users_files.append(i)
         elif "app_data" in i:
             app_data_files.append(i)
+    tasks_files.sort(reverse=True)
+    users_files.sort(reverse=True)
+    app_data_files.sort(reverse=True)
     while len(tasks_files) > 10:
         os.remove(os.path.join(root, tasks_files.pop()))
     while len(users_files) > 10:
@@ -93,7 +96,9 @@ async def recover():
             users_files.append(i)
         elif "app_data" in i:
             app_data_files.append(i)
-
+    tasks_files.sort()
+    app_data_files.sort()
+    users_files.sort()
     async with Data.lock:
         unfinished = True
         while unfinished:
@@ -109,7 +114,7 @@ async def recover():
 
             except Exception as error:
                 print(error)
-                if len(tasks_files):
+                if len(tasks_files)>1:
                     print("Fetching next backup...")
                     tasks_files.pop()
                 else:

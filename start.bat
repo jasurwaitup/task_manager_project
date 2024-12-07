@@ -1,6 +1,9 @@
 @echo off
 python --version > nul 2> nul
 echo Starting...
+
+
+
 if %errorlevel% neq 0 (
     echo Python is not installed
     exit /b
@@ -30,6 +33,10 @@ pip install -r requirements.txt
 if %errorlevel% neq 0 (
     echo Failed to install dependencies
 )
+
+cd ./dashboard
+start cmd /k "py manage.py runserver"
+cd ..
 
 cd /d %~dp0bot
 py main.py

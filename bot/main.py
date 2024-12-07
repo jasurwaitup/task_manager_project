@@ -2,7 +2,31 @@ from system import launch_bot
 import datetime
 import requests
 import json
+from pyngrok import ngrok, conf
+from pyngrok.exception import PyngrokNgrokError
+import subprocess
+import time
+import atexit
+import os
 
+
+def start_ngrok(token):
+        conf.get_default().auth_token = token
+        ngrok_process = subprocess.Popen(["ngrok", "http", str(8000)], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        atexit.register(ngrok_process.terminate)
+        atexit.register(ngrok.kill)
+        while True:
+            time.sleep(5)
+            try:
+                response = requests.get("http://127.0.0.1:4040/api/tunnels")
+                tunnels = response.json()
+                print(tunnels)
+                public_url = tunnels['tunnels'][0]['public_url']
+                return public_url
+            except Exception as e:
+                ngrok_process.terminate()
+                ngrok.kill()
+                raise RuntimeError("Failed to get public url, is ngrok running")
 
 def first_kex():
     greeting = "Hi, t"
@@ -31,6 +55,8 @@ And make sure that you have read README"""
 called BotFather by creating a new bot, and don't forget to add /start command.
 If you are troubled consult an IT specialist"""
     message6 = "(Yes or No | yes or no | y or n | 1 or 0 | any number or 0) "
+    message7 = """Now input the auhttoken provided by ngrok
+If you dont have ot you can sign up in ngrok.com and get authtoken in ngrok.setup.com"""
 
     print(message1, message6, sep="\n")
 
@@ -65,6 +91,14 @@ If you are troubled consult an IT specialist"""
         else:
             return num
 
+    def get_authtoken():
+        token = input(" Your authtoken you can find it in http://ngrok/setup.com: ").strip()
+        try:
+            public_url = start_ngrok(token)
+            return token, public_url
+        except:
+            print("Token is invalid, try again")
+            return get_authtoken()
 
     while True:
         answer = input(" Answer: ").lower().strip()
@@ -84,36 +118,54 @@ If you are troubled consult an IT specialist"""
                 token = get_token()
                 print(message3)
                 num = get_number()
+                print(message7)
+                authtoken, public_url = get_authtoken()
                 print(message4)
-                return token, num
+                return token, num, authtoken, public_url
             else:
                 print(message5)
         else:
             print(message6)
 
+def write_json(data:dict):
+    with open(os.path.join('..', 'config.json'), 'w') as file:
+            json.dump(data, file)
+
 
 def start():
-    token, number = None, None
+    token, number, authtoken, public_url = None, None, None, None
     try:
-        with open("../config.json", "r") as file:
+        with open(os.path.join('..', 'config.json'), "r") as file:
             config = json.load(file)
             if not config:
                 raise ValueError
     except:
-        config = {"token":None,"number":None}
+        config = {"token":None,"number":None, "authtoken":None}
+    print(config)
     token = config["token"]
     number = config["number"]
-    if token and  number:
+    authtoken = config["authtoken"]
+    if token and  number and authtoken:
+        public_url = start_ngrok(authtoken)
+        config["public_url"] = public_url
+        write_json(config)
         print("Launching bot using pre-set settings...")
-        launch_bot(token, number)
-    with open("../config.json", "w") as file:
-        token, number = first_kex()
+        print(config)
+        launch_bot(token, number, public_url)
+        config.pop("public_url")
+        write_json(config)
+        return
+    else:
+        token, number, authtoken, public_url = first_kex()
         config = {}
         config["token"] = token
         config["number"] = number
+        config["authtoken"] = authtoken
+        config["public_url"] = public_url
         print(config)
-        json.dump(config, file)
+        write_json(config)
     
-    launch_bot(token, number)
+    launch_bot(token, number, public_url)
 
 start()
+a = []

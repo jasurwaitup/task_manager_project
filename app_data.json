@@ -1,0 +1,123 @@
+{
+    "alarm_interval": 5,
+    "admin_password": "000000",
+    "bot_settings": {
+        "bot_description": ""
+    },
+    "textual_content": {
+        "comments_header": [
+            "Comments",
+            "What is comments' header called in task status"
+        ],
+        "files_set": [
+            "Files are ready",
+            "What bot texts when users have attached files"
+        ],
+        "commented": [
+            "Commented",
+            "What bot texts when users have commented"
+        ],
+        "file_attach_prompt": [
+            "Attach files, if you have none hit OK",
+            "What bot says when users want to attach files"
+        ],
+        "greeting_message": [
+            "Hi, admin or user",
+            "The first message of the bot"
+        ],
+        "phone_number_prompt": [
+            "Share your number please",
+            "What bot texts when asks for phone number"
+        ],
+        "admin_password_prompt": [
+            "Please enter admin password",
+            "What bot texts when asks admin password"
+        ],
+        "application_sent": [
+            "Your applictaion will be reviewed soon",
+            "What bot texts when appplication is sent"
+        ],
+        "appliaction_waiting": [
+            "Your applictaion will is being reviewed",
+            "What bot texts when user checks appliction status"
+        ],
+        "user_accepted": [
+            "You are accepted",
+            "What users see when they are accepted"
+        ],
+        "user_rejected": [
+            "You are rejected",
+            "What users see when they are rejected"
+        ],
+        "user_notification": [
+            "Dont forget your task",
+            "What users see when they are notified manually"
+        ],
+        "user_reminder": [
+            "You have a task",
+            "What users see when they are reminded hourly"
+        ],
+        "start_after_registration": [
+            "welcome back",
+            "What bot texts when /start is sent"
+        ],
+        "write_comment_prompt":[
+            "Write your comment",
+            "What bot says when user wants to comment"
+        ]
+    },
+    "button_texts": {
+        "admin": [
+            "Admin",
+            "I am admin button in registration"
+        ],
+        "user": [
+            "User",
+            "I am user button in registration"
+        ],
+        "share_number": [
+            "Share your phone number please",
+            "share number in registration"
+        ],
+        "comment": [
+            "Comment",
+            "Commment button in task status"
+        ],
+        "file": [
+            "File",
+            "Attch file button in task status"
+        ],
+        "accept": [
+            "Accept",
+            "Accept button in users task status"
+        ],
+        "complete": [
+            "Complete",
+            "Complete button in users task status"
+        ],
+        "edit": [
+            "Edit",
+            "Edit button in admin task status"
+        ],
+        "notify": [
+            "Notify",
+            "Notify button in admin task status"
+        ],
+        "highlight_symbol": [
+            "!",
+            "What symbol to use to highlight buttons"
+        ],
+        "attached_symbol": [
+            "N",
+            "What symbol to use to show 'user does not acceptd the task yet' status"
+        ],
+        "accepted_symbol": [
+            "A",
+            "What symbol to use to show 'user acceptd the task' status"
+        ],
+        "completed_symbol": [
+            "C",
+            "What symbol to use to show 'user completed the task' status"
+        ]
+    }
+}

@@ -4,7 +4,7 @@ from classes import User, Admin, Task, Participant
 from functionality import Markup
 
 import re
-import signal
+import atexit
 import sys
 import asyncio
 import copy
@@ -15,6 +15,7 @@ from telegram import Update, KeyboardButton, ReplyKeyboardMarkup, InlineKeyboard
 
 TOKEN = "7910267092:AAHaytMo5F4KI8Zt3luCt9wIR3Uz6Jr037E"
 APP_DATA = {}
+DASHBOARD_URL = ""
 BACKUP_INTERVAL = 600
 READ_TIMEOUT = 30
 WRITE_TIMEOUT = 30
@@ -199,6 +200,8 @@ async def handle_keyboard_buttons(update: Update, context: ContextTypes.DEFAULT_
             elif message ==Markup.pref:
                 context.user_data["state"] = IS_CHANGING_PREFERENCES
                 await update.effective_message.reply_text(Markup.what_change, reply_markup=Admin.PREFERENCES_MENU)
+            elif message == Markup.dashboard:
+                await update.effective_message.reply_text(DASHBOARD_URL)
         elif context.user_data["state"] == IS_EDITING_DESCRIPTION:
             if message != Markup.new_task:
                 context.user_data["current_task"].set_description(message)
@@ -347,6 +350,7 @@ async def handle_keyboard_buttons(update: Update, context: ContextTypes.DEFAULT_
                     "admin" in user_type])
                 await data_handler.add_new_task(context.user_data["current_task"].to_tuple())
                 context.user_data["current_task"] = None
+                await data_handler.back_up(context)
             # Editing Task
             if context.user_data["flag"]:
                 context.user_data["state"] = IS_REGISTERED
@@ -432,6 +436,7 @@ async def handle_inline_buttons(update: Update, context: ContextTypes.DEFAULT_TY
                 context.user_data["state"] = IS_REGISTERED
                 context.user_data["lastly_notified"] = None
                 context.user_data["current_task"] = None
+                await data_handler.back_up(context)
                 await update.effective_message.reply_text(Markup.edited, reply_markup=Admin.ADMIN_MENU)
             elif "can" == data.data:
                 await clean(context, None, user_id)
@@ -643,8 +648,9 @@ async def notify_users(context: ContextTypes.DEFAULT_TYPE, users_list, not_type,
 async def reminder(context):
     tasks = await data_handler.get_all_tasks()
     app_data = await get_from_app_data(["textual_content"])
+    all_users = []
     for i in tasks.values():
-        all_users.update(i[3])
+        all_users.extend(i[3])
         all_users = all_users - set(i[5])
     for user_id in all_users:
         await context.bot.sendMessage(user_id, app_data["textual_content"]["user_reminder"][0])
@@ -712,7 +718,7 @@ async def handle_commands(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await show_registration_menu(update, context, "type")
 
 
-def graceful_shutdown(signum, frame):
+def graceful_shutdown():
     print("Shutting Down...")
     data_handler.Data.app_data = APP_DATA
     data_handler.emergency_save()
@@ -728,11 +734,12 @@ async def post_polling(app: Application):
 
 
 
-def launch_bot(token=TOKEN, admin_number: str = None):
+def launch_bot(token=TOKEN, admin_number: str = None, dashboard_url = None):
+    global DASHBOARD_URL
     # Very first, core function that initiates bot.
     # This function is called only once in the whole bot lifetime
 
-    signal.signal(signal.SIGINT, graceful_shutdown)
+    atexit.register(graceful_shutdown)
     #signal.signal(signal.SIGTERM, graceful_shutdown)
 
     app = Application.builder()
@@ -745,6 +752,9 @@ def launch_bot(token=TOKEN, admin_number: str = None):
 
     if admin_number:
         Admin.Super_Admin_Numbers.append(admin_number)
+    if dashboard_url:
+        DASHBOARD_URL = dashboard_url
+        print(DASHBOARD_URL)
 
     app.add_handler(CallbackQueryHandler(handle_inline_buttons))
     app.add_handler(CommandHandler("start", handle_commands))
