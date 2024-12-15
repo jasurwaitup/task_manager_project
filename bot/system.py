@@ -75,14 +75,15 @@ async def show_task_list(update: Update, context: ContextTypes.DEFAULT_TYPE, to_
     tasks = await data_handler.get_all_tasks()
     all_users = await data_handler.get_all_users()
     app_data = await get_from_app_data(["textual_content", "button_texts"])
-    if context.user_data["cache"]:
-        await clean(context, None, user_id)
+    #if context.user_data["cache"]:
+        #await clean(context, None, user_id)
 
     header = Markup.all_tasks
     if not tasks: header = Markup.no_tasks
     x = await update.effective_message.reply_text(header)
-    context.user_data["cache"] = {}
-    context.user_data["cache"]["0"] = [x.message_id]
+    context.user_data["cache"] = []
+    #context.user_data["cache"]["0"] = [x.message_id]
+    context.user_data["cache"].append(x.message_id)
 
     for key, values in tasks.items():
         is_user_attached = user_id in values[3]
@@ -91,10 +92,11 @@ async def show_task_list(update: Update, context: ContextTypes.DEFAULT_TYPE, to_
                 continue
         task_data = (key, *values)
         a_task = Task(*task_data)
-        body, markup = await a_task.show_me(app_data, to_admin, user_id, all_users=all_users)
+        body, markup = await a_task.show_me(app_data, is_for_admin=to_admin, user_id=user_id, all_users=all_users)
 
         x = await update.effective_message.reply_text(body, reply_markup=[None, markup][is_user_attached or to_admin])
-        context.user_data["cache"][key] = [x.message_id]
+        #context.user_data["cache"][key] = [x.message_id]
+        context.user_data["cache"].append(x.message_id)
 
         comments_header = f"{app_data["textual_content"]["comments_header"][0]}:\n\n"
         comments_body = ""
@@ -112,7 +114,8 @@ async def show_task_list(update: Update, context: ContextTypes.DEFAULT_TYPE, to_
             comments_body += "\n\n"
         if comments_body:
             x = await update.effective_message.reply_text(comments_header + comments_body)
-            context.user_data["cache"][key].append(x.message_id)
+            #context.user_data["cache"][key].append(x.message_id)
+            context.user_data["cache"].append(x.message_id)
 
         files = a_task.get_files()
         if files:
@@ -128,29 +131,28 @@ async def show_task_list(update: Update, context: ContextTypes.DEFAULT_TYPE, to_
                         x = await update.effective_message.reply_photo(caption=name, photo=a_file)
                     else:
                         x = await update.effective_message.reply_document(caption=name, document=a_file)
-                    context.user_data["cache"][key].append(x.message_id)
+                    #context.user_data["cache"][key].append(x.message_id)
+                    context.user_data["cache"].append(x.message_id)
 
 
 async def clean(context: ContextTypes.DEFAULT_TYPE, message_id, user_id, inverse: bool = False):
-    x = {}
+    x = []
     print("clean")
-    for task_id, message_ids in context.user_data["cache"].items():
+    for m_i in context.user_data["cache"]:
         if inverse:
-            if task_id == message_id:
-                for a_message_id in message_ids:
-                    await context.bot.delete_message(user_id, a_message_id)
+            if m_i == message_id:
+                await context.bot.delete_message(user_id, m_i)
                 continue
-            x[task_id] = message_ids
+            x.append(m_i)
         else:
-            for a_message_id in message_ids:
-                if message_id == a_message_id:
-                    x[task_id] = [message_id]
-                    continue
-                await context.bot.delete_message(user_id, a_message_id)
+            if message_id == m_i:
+                x.append(m_i)
+                continue
+            await context.bot.delete_message(user_id, m_i)
     if message_id:
         context.user_data["cache"] = x
         return
-    context.user_data["cache"] = {}
+    context.user_data["cache"] = []
 
 
 async def identify_participant(user_id, context: ContextTypes.DEFAULT_TYPE):
@@ -185,7 +187,6 @@ async def handle_keyboard_buttons(update: Update, context: ContextTypes.DEFAULT_
             if context.user_data["state"] in list(range(4, 17)):
                 context.user_data["state"] = IS_REGISTERED
                 await update.message.reply_text(Markup.canceled, reply_markup=Admin.ADMIN_MENU)
-                await clean(context, None, user_id)
                 context.user_data["current_task"] = None
                 context.user_data["flag"] = None
                 return
@@ -231,11 +232,11 @@ async def handle_keyboard_buttons(update: Update, context: ContextTypes.DEFAULT_
             await update.effective_message.reply_text(f"Set to {context.user_data["current_task"].get_deadline()}")
             context.user_data["state"] = IS_EDITING_TASK
             if not type(context.user_data["flag"]) == str:
-                user_key = await Admin.edit_users(context.user_data["current_task"])
+                user_key = await Admin.edit_users(context.user_data["current_task"], symbol=app_data["button_texts"]["marked_symbol"][0])
                 await update.message.reply_text(
                     f"{Markup.deadline_is_set_to} {context.user_data["current_task"].get_deadline()}",
                     reply_markup=Participant.CANCEL_MENU)
-                x = await update.message.reply_text(Markup.attach_users, reply_markup=user_key)
+                await update.message.reply_text(Markup.attach_users, reply_markup=user_key)
                  
                 context.user_data["state"] = IS_EDITING_ATTACHED_USERS
                 return
@@ -345,6 +346,7 @@ async def handle_keyboard_buttons(update: Update, context: ContextTypes.DEFAULT_
         if message == Markup.save:
             # New Task
             if not context.user_data["flag"]:
+                print("This is new task")
                 context.user_data["state"] = IS_REGISTERED
                 await update.message.reply_text(app_data["textual_content"]["files_set"][0], reply_markup=[User.USER_MENU, Admin.ADMIN_MENU][
                     "admin" in user_type])
@@ -364,17 +366,28 @@ async def handle_keyboard_buttons(update: Update, context: ContextTypes.DEFAULT_
         context.user_data["state"] = IS_REGISTERED
         x = await update.effective_message.reply_text(app_data["textual_content"]["commented"][0], reply_markup=[User.USER_MENU, Admin.ADMIN_MENU][
             "admin" in user_type])
+        show_task_list(update, context, user_type=="+admin")
 
 
 async def handle_inline_buttons(update: Update, context: ContextTypes.DEFAULT_TYPE):
     data = update.callback_query
     await data.answer()
+    if  context.user_data["state"]==IS_REGISTERED:
+        if update.effective_message.id not in context.user_data["cache"] :
+            if not data.data[0] in '+-/*':
+                print("Not in data")
+                return
+    
+    
+
+    
+
     user_id = update.effective_user.id
     user_type = await identify_participant(user_id, context)
     app_data = await get_from_app_data(["button_texts","textual_content"])
 
     print(f"Inline {data.data} hit")
-
+    
     pattern = r'^[a-zA-Z]\d+$'
 
     if user_type == "+admin":
@@ -390,7 +403,7 @@ async def handle_inline_buttons(update: Update, context: ContextTypes.DEFAULT_TY
                 await update.effective_message.delete()
                 await update.effective_message.reply_text(Markup.deleted)
                 print(context.user_data["cache"])
-                if a in context.user_data["cache"].keys():
+                if a in context.user_data["cache"]:
                     await clean(context, a, user_id, True)
             elif "/" in data.data:
                 await update.effective_message.delete()
@@ -410,7 +423,7 @@ async def handle_inline_buttons(update: Update, context: ContextTypes.DEFAULT_TY
                                                                   reply_markup=Participant.ATTACH_FILE_MENU)
             else:
                 # ADMIN IS RADIO BUTTONING USERS
-                user_list = await Admin.edit_users(context.user_data["current_task"], int(data.data))
+                user_list = await Admin.edit_users(context.user_data["current_task"], int(data.data), app_data["button_texts"]['marked_symbol'][0])
                 await update.effective_message.edit_reply_markup(user_list)
         if context.user_data["state"] == IS_EDITING_TASK:
             if "des" == data.data:
@@ -423,7 +436,7 @@ async def handle_inline_buttons(update: Update, context: ContextTypes.DEFAULT_TY
                 context.user_data["state"] = IS_EDITING_YEAR
                 return
             elif "use" == data.data:
-                user_key = await Admin.edit_users(context.user_data["current_task"])
+                user_key = await Admin.edit_users(context.user_data["current_task"], symbol=app_data["button_texts"]['marked_symbol'])
                 await update.effective_message.edit_reply_markup(user_key)
                 context.user_data["state"] = IS_EDITING_ATTACHED_USERS
                 return
@@ -431,15 +444,14 @@ async def handle_inline_buttons(update: Update, context: ContextTypes.DEFAULT_TY
                 await update.effective_message.edit_reply_markup(reply_markup=Participant.INLINE_DIALOG)
             elif "don" == data.data:
                 await data_handler.add_new_task(context.user_data["current_task"].to_tuple())
-                await clean(context, None, user_id)
                 context.user_data["flag"] = None
                 context.user_data["state"] = IS_REGISTERED
                 context.user_data["lastly_notified"] = None
                 context.user_data["current_task"] = None
+                await clean(context, None, user_id)
                 await data_handler.back_up(context)
                 await update.effective_message.reply_text(Markup.edited, reply_markup=Admin.ADMIN_MENU)
             elif "can" == data.data:
-                await clean(context, None, user_id)
                 context.user_data["flag"] = None
                 context.user_data["state"] = IS_REGISTERED
                 context.user_data["lastly_notified"] = None
@@ -486,11 +498,11 @@ async def handle_inline_buttons(update: Update, context: ContextTypes.DEFAULT_TY
                 await update.effective_message.edit_reply_markup(reply_markup=a)
                 context.user_data["lastly_notified"] = True
         elif "c" in data.data and context.user_data["cache"]:
-            await clean(context, None, user_id)
+            await clean(context, update.effective_message.id, user_id)
             await update.effective_message.reply_text(app_data["textual_content"]["write_comment_prompt"][0])
             context.user_data["state"] = IS_COMMENTING
         elif "f" in data.data and context.user_data["cache"]:
-            await clean(context, None, user_id)
+            await clean(context, update.effective_message.id, user_id)
             x = await update.effective_message.reply_text(app_data["textual_content"]["file_attach_prompt"][0], reply_markup=Participant.ATTACH_FILE_MENU)
             context.user_data["state"] = IS_ATTACHING_FILES
         elif "a" in data.data:
@@ -508,7 +520,7 @@ async def handle_inline_buttons(update: Update, context: ContextTypes.DEFAULT_TY
         # for deleting task
         if type(context.user_data["flag"]) == str and context.user_data["flag"].isdigit():
             await data_handler.del_a_task(context.user_data["flag"])
-            await clean(context, None, user_id)
+            await clean(context, update.effective_message.id, user_id, inverse=True)
             await update.effective_message.reply_text(Markup.yes)
             context.user_data["flag"] = None
             context.user_data["current_task"] = None
@@ -529,6 +541,7 @@ async def handle_inline_buttons(update: Update, context: ContextTypes.DEFAULT_TY
             await update.effective_message.edit_reply_markup(markup)
             context.user_data["current_task"] = None
             context.user_data["flag"] = None
+            await data_handler.back_up(context)
         # for discarding textual content modification
         elif context.user_data["state"] == IS_CHANGING_textual_content:
             await update.effective_message.delete()
@@ -651,7 +664,7 @@ async def reminder(context):
     all_users = []
     for i in tasks.values():
         all_users.extend(i[3])
-        all_users = all_users - set(i[5])
+        all_users =list( set(all_users) - set(i[5]))
     for user_id in all_users:
         await context.bot.sendMessage(user_id, app_data["textual_content"]["user_reminder"][0])
 

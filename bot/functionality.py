@@ -47,7 +47,7 @@ class Markup:
     pref = "Preferences"
     dashboard = "Dashboard"
 
-async def radio_button(chosen_list:list, full_dict:dict, hit_button = None):
+async def radio_button(chosen_list:list, full_dict:dict, hit_button = None, symbol  = "V"):
     #elements in chosen list are keys for full_dict
     if hit_button:
         if hit_button not in chosen_list:
@@ -58,7 +58,7 @@ async def radio_button(chosen_list:list, full_dict:dict, hit_button = None):
     for button, name in full_dict.items():
         mark = ""
         if button in chosen_list:
-            mark = "V"
+            mark = symbol
         kb.append([InlineKeyboardButton(f"{mark} {name}", callback_data=button)])
     kb.append([InlineKeyboardButton("Ok", callback_data="OK")])
     radio_menu= InlineKeyboardMarkup(kb)

@@ -96,8 +96,8 @@ If you dont have ot you can sign up in ngrok.com and get authtoken in ngrok.setu
         try:
             public_url = start_ngrok(token)
             return token, public_url
-        except:
-            print("Token is invalid, try again")
+        except Exception as e:
+            print(f"{e}, try again")
             return get_authtoken()
 
     while True:

@@ -36,12 +36,12 @@ def get_host():
                 config =  json.load(file)
                 public_url = config["public_url"]
                 host = public_url.removeprefix("http://")
-                host = public_url.removeprefix("https://")
-                print(host, '-'*99)
-                return host
-        except KeyError:
-            pass
-ALLOWED_HOSTS = [get_host()]
+                host2 = public_url.removeprefix("https://")
+                print(host, host2,  '-'*99)
+                return host, host2
+        except Exception as e:
+            print(e)
+ALLOWED_HOSTS = [*get_host()]
 # Application definition
 
 INSTALLED_APPS = [

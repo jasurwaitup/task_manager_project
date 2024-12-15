@@ -12,7 +12,8 @@ class Task(models.Model):
     users = models.TextField(max_length=1000)
     started_on = models.CharField(max_length=200)
     ends_on = models.CharField(max_length=200)
-    status = models.CharField(max_length=200, choices=STATUS_CHOICES, default="pending")
+    number_of_files = models.IntegerField(max_length=10)
+    completeness = models.FloatField(max_length=10)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     def __str__(self):

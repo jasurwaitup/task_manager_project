@@ -73,10 +73,25 @@ def refine():
         started = ".".join(map(str, v[1]))
         ends = '.'.join(map(str, v[2]))
         users = ''
-        for user_id in v[3]:
-            users += user_data[str(user_id)][2]
-            users += '\n'
-        b = {"id":k, "name":name, "description":description, "users":users, "started_on":started, "ends_on":ends}
+        completed_users = 0
+        all_users = 0
+        for u in v[3]:
+            if u in v[5]:
+                users += (f"{user_data[str(u)][2]} C")
+                users += '\n'
+                completed_users+=1
+            elif u in v[4]:
+                users += (f"{user_data[str(u)][2]} A")
+                users += '\n'
+                all_users+=1
+            else:
+                users += (f"{user_data[str(u)][2]} N")
+                users += '\n'
+            all_users+=1
+        number_of_files = len(v[6].values())
+        completeness = completed_users/all_users
+        print(completeness)
+        b = {"id":k, "name":name, "description":description, "users":users, "started_on":started, "ends_on":ends, "number_of_files" : number_of_files, 'completeness': completeness}
         a.append(b)
     return a
 

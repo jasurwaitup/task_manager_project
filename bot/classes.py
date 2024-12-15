@@ -241,13 +241,13 @@ class Admin(Participant):
         await context.bot.sendMessage(user_id, "You're rejected", reply_markup=ReplyKeyboardRemove())
         await update.effective_message.delete()
     @staticmethod
-    async def edit_users(a_task : Task, user_id=None):
+    async def edit_users(a_task : Task, user_id=None, symbol="V"):
         chosen = a_task.get_attached_users()
         full_data = (await data_handler.get_all_users())["users"]
         full_dict = {}
         for k, v in full_data.items():
             full_dict[k] = v[-2]
-        return await radio_button(chosen, full_dict, user_id)
+        return await radio_button(chosen, full_dict, user_id, symbol)
     @staticmethod
     async def edit_deadline (step : int, year : int =None, month : str=None):
         month_names = ["Jan", "Feb", "March", "Apr", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"]

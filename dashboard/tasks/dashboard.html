@@ -103,7 +103,8 @@
                 <p><strong>Users </strong>{{ task.users }}</p>
                 <p><strong>Started on </strong>{{task.started_on}}</p>
                 <p><strong>Ends on </strong>{{task.ends_on}}</p>
-                <p><strong>Status </strong></p>
+                <p><strong>Number of Files </strong>{{task.number_of_files}}</p>
+                <p><strong>Completed </strong><progress value="{{task.completeness}}" max="1.0"></progress></p>
             </div>
             {% empty %}
             <p>No Tasks Avialable</p>
