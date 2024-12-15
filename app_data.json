@@ -1,68 +1,68 @@
 {
-    "alarm_interval": 5,
+    "alarm_interval": 3600,
     "admin_password": "000000",
     "bot_settings": {
         "bot_description": ""
     },
     "textual_content": {
         "comments_header": [
-            "Comments",
+            "\ud83d\udcac",
             "What is comments' header called in task status"
         ],
         "files_set": [
-            "Files are ready",
+            "\u2705",
             "What bot texts when users have attached files"
         ],
         "commented": [
-            "Commented",
+            "\u2705",
             "What bot texts when users have commented"
         ],
         "file_attach_prompt": [
-            "Attach files, if you have none hit OK",
+            "Add files, if you have none hit",
             "What bot says when users want to attach files"
         ],
         "greeting_message": [
-            "Hi, admin or user",
+            "Welcome to the Task Manager\n\nUser or Admin",
             "The first message of the bot"
         ],
         "phone_number_prompt": [
-            "Share your number please",
+            "Share your number, please",
             "What bot texts when asks for phone number"
         ],
         "admin_password_prompt": [
-            "Please enter admin password",
+            "Enter the password provided by Rector",
             "What bot texts when asks admin password"
         ],
         "application_sent": [
-            "Your applictaion will be reviewed soon",
+            "Your application will be reviewed, thank you for patience",
             "What bot texts when appplication is sent"
         ],
         "appliaction_waiting": [
-            "Your applictaion will is being reviewed",
+            "Please wait, your application is being reviewed.",
             "What bot texts when user checks appliction status"
         ],
         "user_accepted": [
-            "You are accepted",
+            "You are accepted\nWelcome to the team \ud83d\udc4f",
             "What users see when they are accepted"
         ],
         "user_rejected": [
-            "You are rejected",
+            "You are rejected \nTalk to one of the admins if something went wrong\n\nSorry for any inconveniences",
             "What users see when they are rejected"
         ],
         "user_notification": [
-            "Dont forget your task",
+            "Admin is notifying you about the task",
             "What users see when they are notified manually"
         ],
         "user_reminder": [
-            "You have a task",
+            "Don't forget to check your scheduled tasks",
             "What users see when they are reminded hourly"
         ],
         "start_after_registration": [
-            "welcome back",
+            "Thank you for sending /start, it is of no use",
             "What bot texts when /start is sent"
         ],
-        "write_comment_prompt":[
-            "Write your comment",
+        "write_comment_prompt": [
+            "Your comment",
             "What bot says when user wants to comment"
         ]
     },
@@ -104,20 +104,24 @@
             "Notify button in admin task status"
         ],
         "highlight_symbol": [
-            "!",
+            "\ud83d\udd25",
             "What symbol to use to highlight buttons"
         ],
         "attached_symbol": [
-            "N",
+            "\ud83d\udca4",
             "What symbol to use to show 'user does not acceptd the task yet' status"
         ],
         "accepted_symbol": [
-            "A",
+            "\ud83d\udd59",
             "What symbol to use to show 'user acceptd the task' status"
         ],
         "completed_symbol": [
-            "C",
+            "\ud83d\udcaf",
             "What symbol to use to show 'user completed the task' status"
+        ],
+        "marked_symbol": [
+            "\u2705",
+            "What mark used to show that item is chosen"
         ]
     }
 }
