@@ -437,7 +437,7 @@ async def handle_inline_buttons(update: Update, context: ContextTypes.DEFAULT_TY
                 context.user_data["state"] = IS_EDITING_YEAR
                 return
             elif "use" == data.data:
-                user_key = await Admin.edit_users(context.user_data["current_task"], symbol=app_data["button_texts"]['marked_symbol'])
+                user_key = await Admin.edit_users(context.user_data["current_task"], symbol=app_data["button_texts"]['marked_symbol'][0])
                 await update.effective_message.edit_reply_markup(user_key)
                 context.user_data["state"] = IS_EDITING_ATTACHED_USERS
                 return
