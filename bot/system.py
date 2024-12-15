@@ -32,7 +32,7 @@ IS_COMMENTING = 12
 IS_CHANGING_PREFERENCES = 13
 IS_CHANGING_REMINDER_INTERVAL = 14
 IS_CHANGING_ADMIN_PASSWORD = 15
-IS_CHANGING_textual_content = 16
+IS_CHANGING_TEXTUAL_CONTENT = 16
 
 IS_GUEST = 0
 IS_GIVING_NUMBER = 1
@@ -48,7 +48,7 @@ State_names_for_convenience = ["IS_GUEST", "IS_GIVING_NUMBER", "IS_TYPING_PASSWO
                                "IS_EDITING_YEAR", "IS_EDITING_MONTH",
                                "IS_EDITING_DAY", "IS_EDITING_ATTACHED_USERS", "IS_ATTACHING_FILES", "IS_EDITING_TASK",
                                "IS_COMMENTING", "IS_CHANGING_PREFERENCES", "IS_CHANGING_REMINDER_INTERVAL", "IS_CHANGING_ADMIN_PASSWORD",
-                               "IS_CHANGING_textual_content"]
+                               "IS_CHANGING_TEXTUAL_CONTENT"]
 
 
 async def get_from_app_data(keys:list=[]):
@@ -247,8 +247,8 @@ async def handle_keyboard_buttons(update: Update, context: ContextTypes.DEFAULT_
         elif context.user_data["state"] == IS_CHANGING_PREFERENCES:
             if message == Markup.textual_content:
                 context.user_data["flag"] = [True, 0, None]
-                context.user_data["state"] = IS_CHANGING_textual_content
-                if not context.user_data["current_task"]:
+                context.user_data["state"] = IS_CHANGING_TEXTUAL_CONTENT
+                if not type(context.user_data["current_task"]) == dict:
                     context.user_data["current_task"] = await  get_from_app_data(["textual_content", "button_texts"])
                 await textual_content(update, context)
             elif message == Markup.alarm_interval:
@@ -285,7 +285,7 @@ async def handle_keyboard_buttons(update: Update, context: ContextTypes.DEFAULT_
                 await set_app_data(datum)
                 await update.effective_message.reply_text(Markup.password_set_to, reply_markup=Admin.PREFERENCES_MENU)
                 context.user_data["state"] = IS_CHANGING_PREFERENCES
-        elif context.user_data["state"] == IS_CHANGING_textual_content:
+        elif context.user_data["state"] == IS_CHANGING_TEXTUAL_CONTENT:
             if context.user_data["flag"][2]:
                 domain, key = context.user_data["flag"][2].split(".")
                 context.user_data["current_task"][domain][key] = [message, context.user_data["current_task"][domain][key][1]]
@@ -405,6 +405,7 @@ async def handle_inline_buttons(update: Update, context: ContextTypes.DEFAULT_TY
                 print(context.user_data["cache"])
                 if a in context.user_data["cache"]:
                     await clean(context, a, user_id, True)
+                data_handler.back_up(context)
             elif "/" in data.data:
                 await update.effective_message.delete()
                 await update.effective_message.reply_text(Markup.you_can_delete)
@@ -456,7 +457,7 @@ async def handle_inline_buttons(update: Update, context: ContextTypes.DEFAULT_TY
                 context.user_data["state"] = IS_REGISTERED
                 context.user_data["lastly_notified"] = None
                 context.user_data["current_task"] = None
-        if context.user_data["state"] == IS_CHANGING_textual_content:
+        if context.user_data["state"] == IS_CHANGING_TEXTUAL_CONTENT:
             if data.data == "next":
                 context.user_data["flag"][1]+=1
                 await textual_content(update, context)
@@ -526,6 +527,7 @@ async def handle_inline_buttons(update: Update, context: ContextTypes.DEFAULT_TY
             context.user_data["current_task"] = None
             context.user_data["lastly_notified"] = None
             context.user_data["state"] = IS_REGISTERED
+            data_handler.back_up(context)
         # for accepting task
         elif context.user_data["flag"] in ["acc", "com"]:
             if context.user_data["flag"] == "acc":
@@ -543,7 +545,7 @@ async def handle_inline_buttons(update: Update, context: ContextTypes.DEFAULT_TY
             context.user_data["flag"] = None
             await data_handler.back_up(context)
         # for discarding textual content modification
-        elif context.user_data["state"] == IS_CHANGING_textual_content:
+        elif context.user_data["state"] == IS_CHANGING_TEXTUAL_CONTENT:
             await update.effective_message.delete()
             context.user_data["current_task"] = None
             context.user_data["flag"] = None
@@ -559,7 +561,7 @@ async def handle_inline_buttons(update: Update, context: ContextTypes.DEFAULT_TY
             context.user_data["current_task"] = None
             context.user_data["flag"] = None
         # for discarding textual content modification
-        elif context.user_data["state"] == IS_CHANGING_textual_content:
+        elif context.user_data["state"] == IS_CHANGING_TEXTUAL_CONTENT:
             await update.effective_message.edit_text("Change")
             await update.effective_message.edit_reply_markup(await textual_content(update, context, only_markup=True))
             
@@ -582,7 +584,7 @@ async def textual_content(update: Update, context: ContextTypes.DEFAULT_TYPE, da
     keyboard_data = {}
     column_height = Markup.column_len
     is_first_time, page, key = context.user_data["flag"]
-    
+
 
     for domain, values in context.user_data["current_task"].items():
         for k, v in values.items():

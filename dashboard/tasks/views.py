@@ -70,8 +70,8 @@ def refine():
     for k, v in task_data.items():
         name  = v[0].split("\n")[0]
         description = v[0].removeprefix(name)
-        started = ".".join(map(str, v[1]))
-        ends = '.'.join(map(str, v[2]))
+        started = ".".join(map(str, v[2]))
+        ends = '.'.join(map(str, v[1]))
         users = ''
         completed_users = 0
         all_users = 0
@@ -101,5 +101,4 @@ def task_dashboard(request):
     
     if not tasks:
         tasks = Task.objects.all()
-        print(tasks)
     return render(request, 'tasks/dashboard.html', {'tasks':tasks})

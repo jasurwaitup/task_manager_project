@@ -57,16 +57,13 @@
             
             @media (min-width:768px){
                 body{
-                    background-color: yellow;
+                    background-color: wheat;
                 }
                 .task-container{
                     display:none;
                 }
-                table {
-                    display:table;
-                }
                 .task-table{
-                    display: table;
+                    display:table;
                     width: 100%;
                     border-collapse: collapse;
                 }
@@ -74,6 +71,9 @@
                     border: 1px solid #ddd;
                     padding: 8px;
                     text-align: left;
+                }
+                .task-card{
+                    display: table-cell;
                 }
             }
             
@@ -111,31 +111,18 @@
             {% endfor %}
         </div>
         <!---For Desktop-->
-        <table>
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Description</th>
-                    <th>Users</th>
-                    <th>Started on</th>
-                    <th>Ends on</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for task in tasks %}
-                <tr>
-                    <td>{{task.name}}</td>
-                    <td>{{task.description}}</td>
-                    <td>{{task.users}}</td>
-                    <td>{{task.started_on}}</td>
-                    <td>{{task.ends_on}}</td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="6">No Tasks Avialable</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <div class="task-table">
+            {% for task in tasks %}
+            <div class="task-card">
+                <h2>{{ task.name }}</h2>
+                <p><strong>Description </strong>{{ task.description }}</p>
+                <p><strong>Users </strong>{{ task.users }}</p>
+                <p><strong>Started on </strong>{{task.started_on}}</p>
+                <p><strong>Ends on </strong>{{task.ends_on}}</p>
+                <p><strong>Number of Files </strong>{{task.number_of_files}}</p>
+                <p><strong>Completed </strong><progress value="{{task.completeness}}" max="1.0"></progress></p>
+            </div>
+            {% endfor %}
+        </div>
     </body>
 </html>
