@@ -2,7 +2,7 @@
 
 
 It faciliates effective communication between directors and employees 
-allowing to assign and complete tasks.
+allowing to assign and complet toe tasks.
 
 Managers, thereinafter admins, can:
 - create and edit tasks
@@ -15,7 +15,6 @@ Managers, thereinafter admins, can:
 
 Employees, thereinafter users, can:
 - complete tasks
-- acces dashboard
 - attach files and add comments
 
 
@@ -60,3 +59,13 @@ Company: TTPU
 Contact: +998505750117
 
 Email: jasur.prsnl@gmail.com
+
+
+Special thanks to:
+
+- Open AI, ChatGpt
+- Reddit users
+- Stack Overflow users
+- Microsoft VS Code
+- PyCharm community
+- Turin Wi-Fi and computers (I appreciate the support)
