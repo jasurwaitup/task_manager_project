@@ -2,7 +2,7 @@
 
 
 It faciliates effective communication between directors and employees 
-allowing to assign and complet toe tasks.
+allowing to assign and complete tasks.
 
 Managers, thereinafter admins, can:
 - create and edit tasks
